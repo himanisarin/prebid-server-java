@@ -47,7 +47,8 @@ public class GeoLocationHealthCheckerTest {
     public void setUp() {
         clock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
         final TimeoutFactory timeoutFactory = new TimeoutFactory(clock);
-        geoLocationHealthChecker = new GeoLocationHealthChecker(vertx, 1L, geoLocationService, timeoutFactory, clock);
+        geoLocationHealthChecker = new GeoLocationHealthChecker(
+                vertx, 1L, 1L, geoLocationService, timeoutFactory, clock);
     }
 
     @Test
@@ -105,7 +106,7 @@ public class GeoLocationHealthCheckerTest {
 
         // then
         final ArgumentCaptor<Handler<Long>> handlerArgumentCaptor = ArgumentCaptor.forClass(Handler.class);
-        verify(vertx).setPeriodic(anyLong(), handlerArgumentCaptor.capture());
+        verify(vertx).setTimer(anyLong(), handlerArgumentCaptor.capture());
 
         final Handler<Long> handler = handlerArgumentCaptor.getValue();
         assertThat(geoLocationHealthChecker.status().getStatus()).isEqualTo("UP");

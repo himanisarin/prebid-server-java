@@ -30,6 +30,7 @@ public class DatabaseHealthCheckerTest {
 
     private static final String DATABASE_CHECK_NAME = "database";
     private static final long TEST_REFRESH_PERIOD = 1000;
+    private static final long TEST_REFRESH_PERIOD_JITTER = 50;
     private static final String TEST_TIME_STRING = ZonedDateTime.now(Clock.systemUTC()).toString();
 
     @Rule
@@ -46,19 +47,24 @@ public class DatabaseHealthCheckerTest {
 
     @Before
     public void setUp() {
-        databaseHealthCheck = new DatabaseHealthChecker(vertx, jdbcClient, TEST_REFRESH_PERIOD);
+        databaseHealthCheck = new DatabaseHealthChecker(
+                vertx, jdbcClient, TEST_REFRESH_PERIOD, TEST_REFRESH_PERIOD_JITTER);
     }
 
     @Test
     public void creationShouldFailWithNullArguments() {
-        assertThatNullPointerException().isThrownBy(() -> new DatabaseHealthChecker(null, jdbcClient, 0));
-        assertThatNullPointerException().isThrownBy(() -> new DatabaseHealthChecker(vertx, null, TEST_REFRESH_PERIOD));
+        assertThatNullPointerException().isThrownBy(() -> new DatabaseHealthChecker(
+                null, jdbcClient, 0, 0));
+        assertThatNullPointerException().isThrownBy(() -> new DatabaseHealthChecker(
+                vertx, null, TEST_REFRESH_PERIOD, TEST_REFRESH_PERIOD_JITTER));
     }
 
     @Test
     public void creationShouldFailWhenRefreshPeriodIsZeroOrNegative() {
-        assertThatIllegalArgumentException().isThrownBy(() -> new DatabaseHealthChecker(vertx, jdbcClient, 0));
-        assertThatIllegalArgumentException().isThrownBy(() -> new DatabaseHealthChecker(vertx, jdbcClient, -1));
+        assertThatIllegalArgumentException().isThrownBy(() -> new DatabaseHealthChecker(
+                vertx, jdbcClient, 0, 0));
+        assertThatIllegalArgumentException().isThrownBy(() -> new DatabaseHealthChecker(
+                vertx, jdbcClient, -1, 0));
     }
 
     @Test
@@ -101,10 +107,11 @@ public class DatabaseHealthCheckerTest {
         assertThat(lastStatus.getLastUpdated()).isAfter(TEST_TIME_STRING);
     }
 
+    //TODO: should be refactored
     @Test
     public void initializeShouldMakeOneInitialRequestAndTwoScheduledRequests() {
         // given
-        given(vertx.setPeriodic(anyLong(), any()))
+        given(vertx.setTimer(anyLong(), any()))
                 .willAnswer(withSelfAndPassObjectToHandler(1, 0L, 1L, 2L));
         given(jdbcClient.getConnection(any()))
                 .willAnswer(withSelfAndPassObjectToHandler(0, sqlClient, Future.succeededFuture()));
