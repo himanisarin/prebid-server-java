@@ -20,22 +20,12 @@ cache:
 settings:
   enforce-valid-account: false
   generate-storedrequest-bidrequest-id: true
-  database:
-    type: postgres
-    dbname: postgres
-    host: localhost
-    pool-size: 4
-    port: 5432
-    user: postgres
-    password: postgres123
-    account-query: ACCOUNT-QUERY
-    stored-requests-query: STORED-REQUEST-QUERY
-    stored-responses-query: STORED-RESPONSE-QUERY
-    circuit-breaker:
-      enabled: false
-      opening-threshold: 100
-      opening-interval-ms: 2000
-      closing-interval-ms: 20000
+  filesystem:
+    settings-filename: /app/prebid-server/sample-app-settings.yaml
+    stored-requests-dir: /app/prebid-server/stored
+    stored-imps-dir: /app/prebid-server/stored
+    stored-responses-dir: /app/prebid-server/stored
+    categories-dir:
 gdpr:
   default-value: 1
   vendorlist:

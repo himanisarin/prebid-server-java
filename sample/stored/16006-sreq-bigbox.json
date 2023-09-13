@@ -1,0 +1,20 @@
+  {
+    "ext": {
+      "prebid": {
+        "bidder": {
+            "pubmatic": {
+                "placement": 3946645,
+                "publisherId": "160982"
+              }
+        }
+      }
+    },
+    "banner": {
+        "format": [{
+          "w": 300,
+          "h": 250
+        }]
+      }
+  }
+  
+  
