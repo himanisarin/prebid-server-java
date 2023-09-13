@@ -7,7 +7,7 @@ import static org.prebid.server.functional.testcontainers.container.PrebidServer
 import static org.prebid.server.functional.testcontainers.container.PrebidServerContainer.ADMIN_ENDPOINT_USERNAME
 
 final class PbsConfig {
-
+/* 
     private static final String DB_ACCOUNT_QUERY = """
 SELECT JSON_MERGE_PATCH(JSON_OBJECT('id', uuid,
                                     'status', status,
@@ -23,6 +23,34 @@ SELECT JSON_MERGE_PATCH(JSON_OBJECT('id', uuid,
                         COALESCE(config, '{}')) as consolidated_config
 FROM accounts_account
 WHERE uuid = %ACCOUNT_ID%
+LIMIT 1
+""" */
+private static final String DB_ACCOUNT_QUERY = """SELECT json_build_object(
+'id', uuid,
+'status', status,
+'auction',json_build_object(
+	 'price-granularity', price_granularity,
+     'banner-cache-ttl', banner_cache_ttl,
+     'video-cache-ttl', video_cache_ttl,
+     'truncate-target-attr', truncate_target_attr,
+     'default-integration', default_integration,
+     'bid-validations', bid_validations,
+	 'events', json_build_object('enabled', events_enabled),
+	'price_floors', json_build_object('enabled', NOT events_enabled),
+	'debug_allow', json_build_object('enabled', events_enabled)
+),
+	 'metrics', json_build_object(
+			'verbosity-level', verbosity_level
+            ),
+                       'privacy', json_build_object(
+                               'ccpa', json_build_object('enabled', enforce_ccpa),
+                               'gdpr', tcf_config
+                           ),
+                       'analytics', json_build_object(
+					 'auction-events',analytics_config)
+)
+from prebid.accounts
+WHERE uuid = '1001'
 LIMIT 1
 """
 
